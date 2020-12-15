@@ -91,6 +91,7 @@ class SmartLevel:
                 #x_new, y_new = combine_2(x_horz, y_horz, x_vert, y_vert)
                 #print(align([x_horz, x_vert, x_new, y_horz, y_vert, y_new, switch_previous]))
                 update_time = utime.ticks_ms() + 200
+                self.led.value(not self.led.value())
                 
             
             #x_horz, y_horz = self.gyr_flat.read_mpu6050()
