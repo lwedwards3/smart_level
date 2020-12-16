@@ -4,9 +4,10 @@
 # Prints to Serial bus
 ############################################################
 
-import writer
-import freesans20
 import framebuf
+from . import writer
+from . import freesans20
+
 
 class BubbleLevel:
     

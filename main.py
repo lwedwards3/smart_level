@@ -1,4 +1,4 @@
-from main.smart_level import SmartLevel
+from main.switcher import Switcher
 
-sl = SmartLevel()
-sl.run()
+sw = Switcher()
+sw.run()
