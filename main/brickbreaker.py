@@ -69,8 +69,8 @@ class Ball(Piece):
 
 class BrickBreaker:
     
-    def __init__(self, accel, display):
-        self.accel=accel
+    def __init__(self, gyro, display):
+        self.gyro=gyro
         self.display = display
         self.bricks = []
         self.brick_size = (3, 6)
@@ -130,7 +130,7 @@ class BrickBreaker:
     
 
     def move(self):
-        x_angle = self.accel.read_mpu6050()[0]
+        x_angle = self.gyro.get_angles()[0]
         self.paddle.pos[1] = int(self.map(x_angle, -30, 30, 0, 127))
         self.paddle.move()
         self.ball.move()

@@ -9,10 +9,11 @@ from . import writer
 from . import freesans20
 
 
+
 class BubbleLevel:
     
-    def __init__(self, accel, display, graphic_mode=False):
-        self.accel = accel
+    def __init__(self, gyro, display, graphic_mode=False):
+        self.gyro = gyro
         self.display = display
         self.font_writer = writer.Writer(display, freesans20)
         self.graphic_mode = graphic_mode
@@ -20,7 +21,7 @@ class BubbleLevel:
 
     def cycle(self, n=1):
         for _ in range(n):
-            x_angle, y_angle = self.accel.read_mpu6050()
+            x_angle, y_angle = self.gyro.get_angles()
             if self.graphic_mode:
                 self.display_crosshairs(x_angle, y_angle)
             else:
