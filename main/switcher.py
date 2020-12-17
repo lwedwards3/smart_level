@@ -20,7 +20,7 @@ class Switcher:
         
         splash_endtime = time.ticks_ms() + 2000 # 2 second splash screen
         self.splash_screen()    
-        self.accel = mpu6050.MPU6050(self.i2c, addr=0x68)
+        self.accel = mpu6050.MPU6050(self.i2c, addr=0x69)
         self.modes = [bubble_level.BubbleLevel(self.accel, self.display, graphic_mode=True),
                  bubble_level.BubbleLevel(self.accel, self.display, graphic_mode=False),
                  brickbreaker.BrickBreaker(self.accel, self.display)]
