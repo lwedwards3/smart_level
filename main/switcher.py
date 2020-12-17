@@ -14,7 +14,7 @@ class Switcher:
     def __init__(self):
         self.i2c = I2C(scl=Pin(22), sda=Pin(21), freq=400000)
         self.display = ssd1306.SSD1306_I2C(128, 64, self.i2c)
-        self.mode_button = Pin(18, Pin.IN, Pin.PULL_UP)
+        self.mode_button = Pin(17, Pin.IN, Pin.PULL_UP)
         self.mode_button_previous_value = False
         self.mode_ispressed = False
         
