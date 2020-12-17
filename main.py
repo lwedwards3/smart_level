@@ -4,8 +4,9 @@ import config
 
 def download_and_install_update_if_available():
     o = OTAUpdater(config.GIT_URL)
+    o.check_for_update_to_install_during_next_reboot()
     o.download_and_install_update_if_available(config.WIFI_SSID, config.WIFI_PWD)
-
+    
 
 def start():
     # main program
