@@ -21,13 +21,16 @@ class Switcher:
         
         splash_endtime = time.ticks_ms() + 2000 # 2 second splash screen
         self.splash_screen()    
+        
         gyro = duo_gyro.DuoGyro(self.i2c)
         self.modes = [bubble_level.BubbleLevel(gyro, self.display, graphic_mode=True),
                  bubble_level.BubbleLevel(gyro, self.display, graphic_mode=False),
-                 brickbreaker.BrickBreaker(gyro, self.display)]
+                 brickbreaker.BrickBreaker(gyro, self.display),
+                 bubble_level.BubbleLevel(gyro, self.display, graphic_mode=False, debug_mode=True)]
         self.mode_labels = ['Bubble Level',
                         'Inclinometer',
-                        'Brick Breaker']
+                        'Brick Breaker',
+                        'Debug']
         self.current_mode = 0
         while time.ticks_ms() < splash_endtime:
             a = 0
