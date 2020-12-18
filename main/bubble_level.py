@@ -55,14 +55,14 @@ class BubbleLevel:
         self.y = min(abs(self.y_table), abs(self.y_wall))
         tbl_greater = 1 if self.y_table > self.y_wall else -1
             
-        if self.y == 0:
+        if int(self.y) == 0:
             sign_abs_min = 0
         else:
             sign_abs_min = sign(self.y_table) if abs(self.y_table) < abs(self.y_wall) else sign(self.y_wall)
-        self.sign_y = tbl_greater * sign_abs_min
+        self.sign_y = tbl_greater * sign_abs_min * -1
     
         self.x = abs(self.x_table + self.x_wall)/2
-        self.sign_x = sign(self.x_table + self.x_wall)
+        self.sign_x = sign(int(self.x_table + self.x_wall))
         
         
         
@@ -78,7 +78,7 @@ class BubbleLevel:
                 angle = 90 - angle
             elif angle < -45:
                 angle = -90 - angle
-            return angle
+            return abs(angle)
             
         self.display.fill(0)
         
@@ -150,25 +150,33 @@ class BubbleLevel:
     def add_arrows(self):
         # up/down arrows
         def updown(x):
-            self.display.line(x, 0, x, 15, 1)
+            if self.sign_y == 0:
+                self.display.line(x-3, 0, x-3, 15, 1)
+                self.display.line(x+3, 0, x+3, 15, 1)
+            else:
+                self.display.line(x, 0, x, 15, 1)
 
-            if self.sign_x== 1:
+            if self.sign_y== 1:
                 self.display.line(x, 0, x-4, 4, 1)
                 self.display.line(x, 0, x+4, 4, 1)
 
-            if self.sign_x == -1:
+            if self.sign_y == -1:
                 self.display.line(x, 15, x-4, 11, 1)
                 self.display.line(x, 15, x+4, 11, 1)
         
         
         def sideside(y):
-            self.display.line(22, y, 37, y, 1)
+            if self.sign_x == 0:
+                self.display.line(22, y-3, 37, y-3, 1)
+                self.display.line(22, y+3, 37, y+3, 1)
+            else:
+                self.display.line(22, y, 37, y, 1)
 
-            if self.sign_y == -1:
+            if self.sign_x == -1:
                 self.display.line(22, y, 26, y-4, 1)
                 self.display.line(22, y, 26, y+4, 1)
 
-            if self.sign_y == 1:
+            if self.sign_x == 1:
                 self.display.line(37, y, 33, y-4, 1)
                 self.display.line(37, y, 33, y+4, 1)
             
