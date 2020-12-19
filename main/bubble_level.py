@@ -68,6 +68,13 @@ class BubbleLevel:
         
     def display_data(self):
         
+        def right_num(n, h_pos, v_pos):
+            # converts n to string and prints right-justified at pos
+            num = str(int(n))
+            h_pos = h_pos - 8 * len(num)
+            self.display.text(num, h_pos, v_pos)
+        
+        
         def write_text(text, line):
             textlen = self.font_writer.stringlen(text)
             self.font_writer.set_textpos(77 - textlen, line)
@@ -82,17 +89,21 @@ class BubbleLevel:
             
         self.display.fill(0)
         
-        if not self.debug_mode:
+        if self.debug_mode:
+            self.display.text('Table', 16, 0)
+            self.display.text('Wall', 80, 0)
+            self.display.text('X:', 0, 16)
+            self.display.text('Y:', 0, 48)
+            right_num(self.x_table, 56, 16)
+            right_num(self.y_table, 56, 48)
+            right_num(self.x_wall, 112, 16)
+            right_num(self.y_wall, 112, 48)
+        else:
             y_angle = limit_angle(self.y * self.sign_y)
             x_angle = limit_angle(self.x * self.sign_x)
             write_text(str(int(y_angle)), 0)
             write_text(str(int(x_angle)), 32)
             self.add_arrows()
-        else:
-            self.display.text(str(int(self.x_table)), 16, 16)
-            self.display.text(str(int(self.y_table)), 16, 48)
-            self.display.text(str(int(self.x_wall)), 80, 16)
-            self.display.text(str(int(self.y_wall)), 80, 48)
         self.display.show()
 
 

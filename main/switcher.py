@@ -23,14 +23,12 @@ class Switcher:
         self.splash_screen()    
         
         gyro = duo_gyro.DuoGyro(self.i2c)
-        self.modes = [bubble_level.BubbleLevel(gyro, self.display, graphic_mode=True),
-                 bubble_level.BubbleLevel(gyro, self.display, graphic_mode=False),
-                 brickbreaker.BrickBreaker(gyro, self.display),
-                 bubble_level.BubbleLevel(gyro, self.display, graphic_mode=False, debug_mode=True)]
-        self.mode_labels = ['Bubble Level',
-                        'Inclinometer',
-                        'Brick Breaker',
-                        'Debug']
+        self.modes = []
+        self.modes.append(['Bubble Level', bubble_level.BubbleLevel(gyro, self.display, graphic_mode=True)])
+        self.modes.append(['Inclinometer', bubble_level.BubbleLevel(gyro, self.display, graphic_mode=False)])
+        self.modes.append(['BrickBreaker', brickbreaker.BrickBreaker(gyro, self.display)])
+        if self.mode_button.value() == 0:  # press button during startup to add debug mode
+            self.modes.append(['Debug mode', bubble_level.BubbleLevel(gyro, self.display, graphic_mode=False, debug_mode=True)])
         self.current_mode = 0
         while time.ticks_ms() < splash_endtime:
             a = 0
@@ -39,7 +37,7 @@ class Switcher:
         
     def run(self):
         while True:
-            mode = self.modes[self.current_mode]
+            mode = self.modes[self.current_mode][1]
             mode.setup()
             keep_going = True
             while not self.debounce():
@@ -51,9 +49,9 @@ class Switcher:
     def menu(self):
         def update_display():
             self.display.fill(0)
-            for i in range(len(self.mode_labels)):
-                self.display.text(self.mode_labels[i], 16, 16*i)
-            self.display.text(">", 0, 16*self.current_mode)
+            for i in range(len(self.modes)):
+                self.display.text(self.modes[i][0], 16, 16*i)
+            self.display.text(">", 0, 16 * self.current_mode)
             self.display.show()
             
         update_display()
@@ -89,6 +87,7 @@ class Switcher:
         time.sleep(0.2)
         self.display.fill(0)
         self.display.text("   SmartLevel", 0, 28)
+        self.display.text("     v0.5.2", 0, 42)
         self.display.show()
         
         
