@@ -7,7 +7,7 @@ from . import mpu6050
 from . import brickbreaker
 from . import bubble_level
 from . import duo_gyro
-
+from . import calibrate
 
 
 class Switcher:
@@ -15,20 +15,21 @@ class Switcher:
     def __init__(self):
         self.i2c = I2C(scl=Pin(22), sda=Pin(21), freq=400000)
         self.display = ssd1306.SSD1306_I2C(128, 64, self.i2c)
-        self.mode_button = Pin(17, Pin.IN, Pin.PULL_UP)
+        self.mode_button = Pin(16, Pin.IN, Pin.PULL_UP)
         self.mode_button_previous_value = False
         self.mode_ispressed = False
         
         splash_endtime = time.ticks_ms() + 2000 # 2 second splash screen
         self.splash_screen()    
         
-        gyro = duo_gyro.DuoGyro(self.i2c)
+        self.gyro = duo_gyro.DuoGyro(self.i2c, print_data=False)
         self.modes = []
-        self.modes.append(['Bubble Level', bubble_level.BubbleLevel(gyro, self.display, graphic_mode=True)])
-        self.modes.append(['Inclinometer', bubble_level.BubbleLevel(gyro, self.display, graphic_mode=False)])
-        self.modes.append(['BrickBreaker', brickbreaker.BrickBreaker(gyro, self.display)])
+        self.modes.append(['Bubble Level', bubble_level.BubbleLevel(self.gyro, self.display, graphic_mode=True)])
+        self.modes.append(['Inclinometer', bubble_level.BubbleLevel(self.gyro, self.display, graphic_mode=False)])
+        self.modes.append(['BrickBreaker', brickbreaker.BrickBreaker(self.gyro, self.display)])
         if self.mode_button.value() == 0:  # press button during startup to add debug mode
-            self.modes.append(['Debug mode', bubble_level.BubbleLevel(gyro, self.display, graphic_mode=False, debug_mode=True)])
+            #self.modes.append(['Debug mode', bubble_level.BubbleLevel(self.gyro, self.display, graphic_mode=False, debug_mode=True)])
+            self.modes.append(['Calibrate', calibrate.Calibrate(self.gyro, self.display, self.mode_button)])
         self.current_mode = 0
         while time.ticks_ms() < splash_endtime:
             a = 0
@@ -87,7 +88,7 @@ class Switcher:
         time.sleep(0.2)
         self.display.fill(0)
         self.display.text("   SmartLevel", 0, 28)
-        self.display.text("     v0.5.2", 0, 42)
+        self.display.text("     v0.5.4", 0, 42)
         self.display.show()
         
         

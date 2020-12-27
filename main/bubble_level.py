@@ -7,6 +7,7 @@
 import framebuf
 from . import writer
 from . import freesans20
+from . import config
 
 
 
@@ -29,9 +30,17 @@ class BubbleLevel:
         self.y_wall = 0
 
 
+    def apply_calibration(self):
+        self.x_table += config.TABLE_X_ADJ
+        self.y_table += config.TABLE_Y_ADJ
+        self.x_wall += config.WALL_X_ADJ
+        self.y_wall += config.WALL_Y_ADJ
+    
+    
     def cycle(self, n=1):
         for _ in range(n):
             self.x_table, self.y_table, self.x_wall, self.y_wall = self.gyro.get_angles()
+            self.apply_calibration()
             self.merge_readings()
             
             if self.graphic_mode:
@@ -52,14 +61,21 @@ class BubbleLevel:
             return 1 if n > 0 else -1
         
         # convert x
-        self.y = min(abs(self.y_table), abs(self.y_wall))
-        tbl_greater = 1 if self.y_table > self.y_wall else -1
-            
-        if int(self.y) == 0:
-            sign_abs_min = 0
+        if abs(self.y_table) < abs(self.y_wall):
+            self.y = abs(self.y_table)
+            self.sign_y = sign(self.y_table) 
         else:
-            sign_abs_min = sign(self.y_table) if abs(self.y_table) < abs(self.y_wall) else sign(self.y_wall)
-        self.sign_y = tbl_greater * sign_abs_min * -1
+            self.y = abs(self.y_wall)
+            self.sign_y = sign(self.y_wall) 
+        
+        #self.y = min(abs(self.y_table), abs(self.y_wall))
+        #tbl_greater = 1 if self.y_table > self.y_wall else -1
+            
+        #if int(self.y) == 0:
+        #    sign_abs_min = 0
+        #else:
+        #    sign_abs_min = sign(self.y_table) if abs(self.y_table) < abs(self.y_wall) else sign(self.y_wall)
+        #self.sign_y = tbl_greater * sign_abs_min * -1
     
         self.x = abs(self.x_table + self.x_wall)/2
         self.sign_x = sign(int(self.x_table + self.x_wall))
@@ -67,17 +83,20 @@ class BubbleLevel:
         
         
     def display_data(self):
+
+        def st_angle(a):
+            return "{:.1f}".format(round(a, 1))
         
         def right_num(n, h_pos, v_pos):
             # converts n to string and prints right-justified at pos
-            num = str(int(n))
+            num = "{:.1f}".format(round(n, 1))
             h_pos = h_pos - 8 * len(num)
             self.display.text(num, h_pos, v_pos)
         
         
         def write_text(text, line):
             textlen = self.font_writer.stringlen(text)
-            self.font_writer.set_textpos(77 - textlen, line)
+            self.font_writer.set_textpos(87 - textlen, line)
             self.font_writer.printstring(text)
             
         def limit_angle(angle):
@@ -101,8 +120,8 @@ class BubbleLevel:
         else:
             y_angle = limit_angle(self.y * self.sign_y)
             x_angle = limit_angle(self.x * self.sign_x)
-            write_text(str(int(y_angle)), 0)
-            write_text(str(int(x_angle)), 32)
+            write_text(st_angle(y_angle), 0)
+            write_text(st_angle(x_angle), 32)
             self.add_arrows()
         self.display.show()
 
@@ -133,8 +152,10 @@ class BubbleLevel:
         # clear screen
         self.display.fill(0)
         # center of cross
-        x = 64 - limit_angle(self.x * self.sign_x * -1)
+        #x = 64 - limit_angle(self.x * self.sign_x * -1)
+        x = 64 - limit_angle(self.x * self.sign_x )
         y = 32 - limit_angle(self.y * self.sign_y)
+        #y = 32 - limit_angle(self.y * self.sign_y * -1)
         
         # black out center of cross when at zero
         center = 0 if (x == 64 and y==32) else 1
@@ -183,11 +204,11 @@ class BubbleLevel:
             else:
                 self.display.line(22, y, 37, y, 1)
 
-            if self.sign_x == -1:
+            if self.sign_x == 1:
                 self.display.line(22, y, 26, y-4, 1)
                 self.display.line(22, y, 26, y+4, 1)
 
-            if self.sign_x == 1:
+            if self.sign_x == -1:
                 self.display.line(37, y, 33, y-4, 1)
                 self.display.line(37, y, 33, y+4, 1)
             
